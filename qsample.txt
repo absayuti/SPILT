@@ -1,0 +1,22 @@
+<TITLE>
+Lab Test Practice Questions
+</TITLE>
+
+
+<QUESTION1>
+ Write a C program to print:
+ 
+	Hello world!
+
+</QUESTION>
+
+
+<QUESTION2>
+ Write a C program to print "Hello World!" in a box like the following
+ example:
+ 
+            +-------------+
+            | Hello World |
+            +-------------+
+ </QUESTION>
+
