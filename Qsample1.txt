@@ -1,0 +1,20 @@
+<TITLE>
+Lab Test Practice Questions
+</TITLE>
+
+
+<QUESTION>
+ Write a C program to print:
+ 
+	Hello world!
+
+</QUESTION>
+
+
+<QUESTION>
+ Write a C program to print:
+ 
+    Welcome to C programming
+
+</QUESTION>
+
