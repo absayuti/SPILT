@@ -29,15 +29,15 @@ For Instructor
 2.	Save the file with names as the following guidelines:
 
 	Assessment type		Question#	File name
-	Assignment 1		1			Qasgn11.txt
-						2			Qasgn12.txt
-	Assignment 2		1			Qasgn21.txt
-						2			Qasgn22.txt
-	Lab Test 1			1			Qtest11.txt
-						2			Qtest12.txt
-	Lab Test 2			1			Qtest21.txt
-						2			Qtest22.txt
-						3			Qtest23.txt
+	Assignment 1		1		Qasgn11.txt
+				2		Qasgn12.txt
+	Assignment 2		1		Qasgn21.txt
+				2		Qasgn22.txt
+	Lab Test 1		1		Qtest11.txt
+				2		Qtest12.txt
+	Lab Test 2		1		Qtest21.txt
+				2		Qtest22.txt
+				3		Qtest23.txt
 
 3.	Copy question files into (or replace the existing one on) /srv/pub/spilt/
 
@@ -98,25 +98,25 @@ Summary of commands
 ```````````````````
 	Step			Command		Remarks
 	Start test		labtest		Enter this at the terminal command prompt
-	Display help	help		Display the help screen which briefly describes 
+	Display help		help		Display the help screen which briefly describes 
 								the commands available to the user
-	View question	view		Display current question
-	Edit program	edit		Start writing a C program to answer the question
-								or to continue editing the current C program.
-								gedit editor will be opened in a new window
-								(if it is not already opened) containing the C
-								program you are writing for the current
-								question. The program file is automatically
-								named according the the question number, i.e.
-								program1.c for question 1, program2.c for
-								question 2 etc.
+	View question		view		Display current question
+	Edit program		edit		Start writing a C program to answer the question
+						or to continue editing the current C program.
+						gedit editor will be opened in a new window
+						(if it is not already opened) containing the C
+						program you are writing for the current
+						question. The program file is automatically
+						named according the the question number, i.e.
+						program1.c for question 1, program2.c for
+						question 2 etc.
 	Compile			compile		Compile the C program (created above) using gcc
-	Verify			run			Run the program (when compilation is successful)
-								Repeat any of the steps above until satisfied 
-								with the answer.
-	Submit program	submit		Submit the answer/program to server. If there 
-								are more questions to answer it will increment 
-								to the next question number.
+	Verify			run		Run the program (when compilation is successful)
+						Repeat any of the steps above until satisfied 
+						with the answer.
+	Submit program		submit		Submit the answer/program to server. If there 
+						are more questions to answer it will increment 
+						to the next question number.
 
 ________________________________________________________________________________
 Important files on the server
@@ -125,22 +125,22 @@ The following files must be placed in designated locations:
 
 	LOCATION		FILES			REMARKS
 	
-	/srv/pub/spilt/	spilt.XXX.py	The python script i.e. the main program
+	/srv/pub/spilt/		spilt.XXX.py		The python script i.e. the main program
 	
-					studentlist.txt	Student names
+				studentlist.txt		Student names
 					
-					Qasgn11.txt		The question banks
-					Qasgn12.txt
-					Qasgn21.txt
-					Qasgn22.txt
-					Qasgn31.txt
-					Qasgn32.txt
-					Qtest11.txt
-					Qtest12.txt
-					Qtest13.txt
-					Qtest21.txt
-					Qtest22.txt
-					Qtest23.txt
+				Qasgn11.txt		The question banks
+				Qasgn12.txt
+				Qasgn21.txt
+				Qasgn22.txt
+				Qasgn31.txt
+				Qasgn32.txt
+				Qtest11.txt
+				Qtest12.txt
+				Qtest13.txt
+				Qtest21.txt
+				Qtest22.txt
+				Qtest23.txt
 					
 	/srv/xfr/spilt/a1	n/a			Subdirectory for answer files				
 	/srv/xfr/spilt/a2	n/a					"
@@ -168,7 +168,7 @@ To do:
 	* 	timestamp sync with server? is it possible?
 
 Done:
-	x   Add option/format for in-class assignment (2 parts)
+	x   	Add option/format for in-class assignment (2 parts)
 	x 	Modify test --> 2 parts too
 	x	Revert to fixed number of of Q files, pick random Q index from file
 	x	Input prompt has timeout. Will update time lapsed every 10 seconds
@@ -179,13 +179,13 @@ Done:
 	x	Fixed bug when compiling with gcc: -lm moved to end of command text
 	x	Allow viewing of questions only
 	x	Changed the function to verify ID so that the file content is buffered
-	    into a list[], then comparison is done with the list. This should
-	    speed up concurrent access time.
+	    	into a list[], then comparison is done with the list. This should
+	    	speed up concurrent access time.
 	x 	Refixed the start time when program stopped half-way. Now it reads the
 		first time-stamp in the status file instead of the one on the last line
 	x	Changed duration oaf assignments to 45 minutes instead of 30
 	x	Hide the subdirectory where the files are transferred to, i.e.
-	    /mnt/xfr/XX/.NNNNN, where XX = a1, a2, a3, t1,t2; and NNNNN is the 
-	    matric number
+	    	/mnt/xfr/XX/.NNNNN, where XX = a1, a2, a3, t1,t2; and NNNNN is the 
+	    	matric number
 	x	The settings are now stored in dicts
 
