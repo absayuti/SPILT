@@ -8,7 +8,7 @@ SPILT stands for “Structured Programming and Interfacing Lab Test”.  Structu
 
 SPILT started as a collection of BASH scripts to facilitate practical assessment (“lab test”) for students of ECB 1063 Structured Programming and Interfacing. Practical assessment is a very important evaluation method for the course as it tests the students on their programming skill in solving programming problems. SPILT allows lab tests to be conducted in the EEE’s Programming Laboratory, on about 30 PCs, and the answers submitted to a single location on a file server. SPILT allows an instructor to write a set of questions (programming problems) and each student has to answer the question one by one in particular order they are presented.
 
-During a lab test, each question will be displayed on the PC’s screen. The answer written by a student is in the form of C program source code that the student writes, edits and tests it himself. He can write and edit his program as he would normally do when he was doing his programming exercises during programming lab sessions. When he is satisfied with his answer, he must submit his program to the file server before he can move on to the next question. 2
+During a lab test, each question will be displayed on the PC’s screen. The answer written by a student is in the form of C program source code that the student writes, edits and tests it himself. He can write and edit his program as he would normally do when he was doing his programming exercises during programming lab sessions. When he is satisfied with his answer, he must submit his program to the file server before he can move on to the next question.
 
 In its current form SPILT consists of a Python program, several text files that contain the data and a couple of BASH scripts to start various things. The main SPILT program is run from a shared subdirectory on an NFS (Network File System) server. Basically, SPILT is a Network-Hosted Executable where execution is primarily done on the clients. On the server, besides hosting the main program and data, a small socket service is run. This socket service is responsible for receiving files that the students send from the clients.
  
@@ -20,7 +20,7 @@ The basic setup of SPILT consists of a Linux server OS and several PCs as client
 ### 2.1. Hardware and software
 The hardware consists of a file server and about 30 PCs interconnected via local area network (LAN). The server shares two directories which are mounted to each client on startup. 
 
-| Server HW & SW requirement | Directories and files |
+| HW & SW requirement | Directories and files |
 |---|---|
 | **Server** |
 | x86_x64 CPU | /srv/pub/ – shared read only 
@@ -45,65 +45,65 @@ Setting up the server for SPILT is quite easy. Basically you only need to instal
 	$ sudo apt update
 	$ sudo apt install nfs-kernel-server
 ```
-To check if NFS server is running, use this command:
+* To check if NFS server is running, use this command:
 ```	
 	$ sudo systemctl status nfs-kernel-server
 ```
-Ubuntu will respond with several lines of text containing miscellaneous information. If the nfs-kernel-server is running, you should see words like Active: active (exited) or something similar.
+* Ubuntu will respond with several lines of text containing miscellaneous information. If the nfs-kernel-server is running, you should see words like Active: active (exited) or something similar.
 
-If the nfs-kernel-server service is not running, try restarting it with this command:
+* If the nfs-kernel-server service is not running, try restarting it with this command:
 ```
 	$ sudo systemctl restart nfs-kernel-server 
 ```
-3.	Create the two subdirectories (pub and xfr) in the /srv directory, using these commands:
+3. Create the two subdirectories (pub and xfr) in the /srv directory, using these commands:
 ```
 	$ sudo mkdir /srv/pub
 	$ sudo mkdir /srv/xfr
 ```
-Make /srv/pub executable and read-only; and make /srv/xfr read-writable, like so:
+* Make /srv/pub executable and read-only; and make /srv/xfr read-writable, like so:
 ```
 	$ sudo chmod +rx /srv/pub
 	$ sudo chmod +w /srv/xfr
 ``` 
-4.	Edit the /etc/exports file to set up sharing of the subdirectories. You can use your favorite text editor, but in this example we’ll use nano:
+4. Edit the /etc/exports file to set up sharing of the subdirectories. You can use your favorite text editor, but in this example we’ll use nano:
 ```	
 	$ sudo nano /etc/exports
 ```
- 	In the /etc/exports file, add the following lines: 
+* In the /etc/exports file, add the following lines: 
 ```
 	/srv/pub	197.19.27.0/24(ro,sync,no_subtree_check)
 	/srv/xfr	197.19.27.0/24(rw,sync,no_subtree_check)
 ```
-Note: In the above example we assume that the server’s IP address is 197.19.27.50, thus within the subnet or local network 197.19.27.0. The entry 0/24 in the last number indicates the available range of the subnet from 197.19.27.1 to 197.19.27.254. Use your own network numbers as you see fit.
+* Note: In the above example we assume that the server’s IP address is 197.19.27.50, thus within the subnet or local network 197.19.27.0. The entry 0/24 in the last number indicates the available range of the subnet from 197.19.27.1 to 197.19.27.254. Use your own network numbers as you see fit.
 
 5.	Make two more subdirectories like so:
 ```
 	$ sudo mkdir /srv/pub/spilt
 	$ sudo mkdir /srv/pub/spilt/tools
 ```
- 	Copy all the files in the source “SPILT folder” into the /srv/pub/spilt/ subdirectory.  The files are:
+* Copy all the files in the source “SPILT folder” into the /srv/pub/spilt/ subdirectory. The files are:
 ```
 	spilt.NNNNN.py	- The program. NNNNN is the version number
 	spilt.config	- Configuration file for SPILT
-	runspilt.sh	- BASH script that call spilt.NNNNN.py
+	runspilt.sh	    - BASH script that call spilt.NNNNN.py
 	Qasgn*.txt		- Question banks for assignments. * = 11,12, 21, 22, 31,32
 	Qtest*.txt		- Question banks for tests. * = 11,12, 13, 21, 22, 23
 	Qsample*.txt	- Sample questions for practice. & = 1, 2
 	Studentlist.txt	- List of student names. Format: 'matric# name'
-	INSTALL.txt	- Quick install instruction
-	SPILT.docx		- This file
+	INSTALL.txt	    - Quick install instruction
+	SPILT.docx		- A document similar to this but in docx format
 ```
 6.	Copy the following files (from the SPILT folder) into the /srv/pub/spilt/tools/ subdirectory:
+```   
+	labtest                 - BASH script to be copied to the clients
+	socksrv.recvfile.005.py - Python script to be run during every labtest session.
+                              The name may vary slightly because this is always a work in progress
 ```
-	labtest		- BASH script to be copied to the clients
-	socksrv.recvfile.005.py 
-- Python script to be run during every labtest session. The name may vary slightly because this is always a work in progress.
-```		
 7.	The next step is to create a set of subdirectories to receive files via a socket server. First, create a subdirectory to denote the class or session in which the students are in. For example, if the class is “December 2025”, and let’s say we decide that ‘~/dec2025’ is the “class subdirectory”, then make it like so:
 ```
 	$ sudo mkdir ~/dec2025
  ```
-Then, create six more subdirectories inside the “class subdirectory” like so:
+8. Then, create six more subdirectories inside the “class subdirectory” like so:
 ```
 	$ mkdir ~/dec2025/asgn1
 	$ mkdir ~/dec2025/asgn2
@@ -112,28 +112,28 @@ Then, create six more subdirectories inside the “class subdirectory” like so
 	$ mkdir ~/dec2025/labtest2
 	$ mkdir ~/dec2025/practice
 ```
-Of course, if the “class subdirectory” is something other than ‘~/dec2025’, then use that name instead.
+* Of course, if the “class subdirectory” is something other than ‘~/dec2025’, then use that name instead.
 
-Then, copy the file socksrv.recvfile.005.py to the "class subdirectory”. The digits ‘005’ in the file is a 3-digit number denoting the version number of the script. So, it is possible to be 006, 007, 008 etc. This program is a socket server that needs to be run every time an assessment is in session. I think I have mentioned that before, but it doesn’t hurt to mention it again, is it? So, you can either copy the file from the source folder; or from the /srv/pub/spilt/tools/ subdirectory, like so:
+9. Then, copy the file socksrv.recvfile.005.py to the "class subdirectory”. The digits ‘005’ in the file is a 3-digit number denoting the version number of the script. So, it is possible to be 006, 007, 008 etc. This program is a socket server that needs to be run every time an assessment is in session. I think I have mentioned that before, but it doesn’t hurt to mention it again, is it? So, you can either copy the file from the source folder; or from the /srv/pub/spilt/tools/ subdirectory, like so:
 ```
 $ sudo cp /srv/pub/spilt/tools/socksrv.recvfile.005.py ~/dec2025/.
 ```
-Of course, replace ‘dec2025’ with the actual “class subdirectory” name. But you already know that, don’t you? 
+* Of course, replace ‘dec2025’ with the actual “class subdirectory” name. But you already know that, don’t you? 
 
-8.	In this step, you will be creating backup subdirectories under the /srv/xfr/ subdirectory. These subdirectories will be created as hidden subdirectories, hence a dot is added to its name. Enter these commands:
+10.	In this step, you will be creating backup subdirectories under the /srv/xfr/ subdirectory. These subdirectories will be created as hidden subdirectories, hence a dot is added to its name. Enter these commands:
 ```
-$ sudo mkdir /srv/xfr/.a1
-$ sudo mkdir /srv/xfr/.a2
-$ sudo mkdir /srv/xfr/.a3
-$ sudo mkdir /srv/xfr/.t1
-$ sudo mkdir /srv/xfr/.t1
+	$ sudo mkdir /srv/xfr/.a1
+	$ sudo mkdir /srv/xfr/.a2
+	$ sudo mkdir /srv/xfr/.a3
+	$ sudo mkdir /srv/xfr/.t1
+	$ sudo mkdir /srv/xfr/.t1
 ```
-9.	Finally, run the socket server script like so (assuming the "class subdirectory” is ‘~/dec2025’):
+11.	Finally, run the socket server script like so (assuming the "class subdirectory” is ‘~/dec2025’):
 ```
 	$ cd ~/dec2025			
 	$ python3 socksrv.recvfile.005.py
 ```
-	Now the server is ready to receive files from the client PCs.
+* Now the server is ready to receive files from the client PCs.
 
 ### 2.3.	Client setup
 These are the steps to set up a PC as a client. You will basically install Ubuntu, gedit text editor and gcc compiler; set it up as an NFS client, and copy over a short BASH script.
@@ -157,7 +157,7 @@ $ sudo apt install nfs-common
 ```
 $ showmount -e 197.19.27.50
 ```
-If the NFS share is working, it will display something similar to this:
+* If the NFS share is working, it will display something similar to this:
 ```
 Export list for 192.19.27.50:
 /srv/pub 192.19.27.0/24
@@ -168,12 +168,14 @@ Export list for 192.19.27.50:
 197.19.27.50:/srv/pub  /mnt/pub nfs ro,_netdev,x-systemd.automount 0 0
 197.19.27.50:/srv/xfr  /mnt/xfr nfs rw,_netdev,x-systemd.automount 0 0
 ```	
-	Note 1: Replace 197.19.27.50: with the actual IP address of your server.
-Note 2: _netdev: Flags the filesystem as a network device, ensuring systemd waits for the network stack to be ready before attempting to mount it. x-systemd.automount: Instructs systemd to create an automount unit. Instead of mounting immediately, it sets up a placeholder mount point. The actual mount occurs only when something tries to access that directory.
-Note 3: On Ubuntu 18, the NFS shares may fail to mount, possibly due to timing issues during startup/mounting. Do the following:
+* Note 1: Replace 197.19.27.50: with the actual IP address of your server.
+* Note 2: _netdev: Flags the filesystem as a network device, ensuring systemd waits for the network stack to be ready before attempting to mount it. x-systemd.automount: Instructs systemd to create an automount unit. Instead of mounting immediately, it sets up a placeholder mount point. The actual mount occurs only when something tries to access that directory.
+* Note 3: On Ubuntu 18, the NFS shares may fail to mount, possibly due to timing issues during startup/mounting. Do the following:
 		a) Create a file at: /etc/network/if-up.d/fstab with the following content:
+```
 #!/bin/sh
 mount -a
+```
 		b) Make the file executable:
 ```		
 	$ sudo chmod +x /etc/network/if-up.d/fstab
@@ -186,7 +188,7 @@ mount -a
 ```
 	$ sudo cp /mnt/pub/spilt/clienttools/labtest /usr/bin/.
 ```
-Next, make the file labtest as read-only and executable, like so:
+* Next, make the file labtest as read-only and executable, like so:
 ```
 	$ sudo chmod +rx /usr/bin/labtest
 ```
@@ -194,63 +196,63 @@ Next, make the file labtest as read-only and executable, like so:
 ```
 	$ labtest
 ```
-If everything is working correctly, the SPILT program will start. If things are not working as they are supposed to be, check that the shared subdirectories are available:
+* If everything is working correctly, the SPILT program will start. If things are not working as they are supposed to be, check that the shared subdirectories are available:
 ```
 	$ ls /mnt
 ```
-If they are available, you should see something similar to this:
+* If they are available, you should see something similar to this:
 ```
 	pub  xfr
 ```
-If they are not available, it means that the NFS server is not working as intended. Try rebooting the server. If it still does not work, go through the procedure again. Reboot after each completed procedure and hope for the best.
+* If they are not available, it means that the NFS server is not working as intended. Try rebooting the server. If it still does not work, go through the procedure again. Reboot after each completed procedure and hope for the best.
 
 ### 2.4. Additional stuff
 
 1.	During client startup, if the NFS shares were not correctly done e.g. wrong subdirectory names, wrong I.P. address etc., mounting of NFS shares may continue to fail even when corrections have been made. The NFS mount failure could be marked as “masked” as its status, which indicates that nfs-common has been intentionally disabled by the system. The service cannot start or be enabled in this state, preventing the mount from succeeding.
 
- 	To resolve this issue, the relevant systemd service needs to be unmasked and restarted:
+* To resolve this issue, the relevant systemd service needs to be unmasked and restarted:
 
-Check the NFS service status to verify that it is masked:
+* Check the NFS service status to verify that it is masked:
 ```
 	$ sudo systemctl status nfs-common.service
 ```
-Look for keywords inactive(dead) and masked in the system’s response which indicates the service is indeed masked.
+* Look for keywords inactive(dead) and masked in the system’s response which indicates the service is indeed masked.
 
-Unmask the service:
+* Unmask the service:
 ```
-$ sudo systemctl unmask nfs-common.service
+	$ sudo systemctl unmask nfs-common.service
 ```
-Enable the service:
+* Enable the service:
 ```
-$ sudo systemctl enable nfs-common.service
+	$ sudo systemctl enable nfs-common.service
 ```
-Start the service:
+* Start the service:
 ```
-$ sudo systemctl start nfs-common.service
+	$ sudo systemctl start nfs-common.service
 ```
-If the above steps give an error, you need to delete the masked link manually:
+* If the above steps give an error, you need to delete the masked link manually:
 ```
-$ sudo rm /usr/lib/systemd/system/nfs-common.service
+	$ sudo rm /usr/lib/systemd/system/nfs-common.service
 ```
-Then repeat the above two steps.
+* Then repeat the above two steps.
 
-After the service is running, attempt NFS mount again, either manually or by using mount -a.
+* After the service is running, attempt NFS mount again, either manually or by using mount -a.
 ```
 $ sudo mount -a
 ```
 2.	The following command can be used to test the write speed when writing onto the NFS server.
 ```
-$ time dd if=/dev/zero of=/mnt/xfr/testfile bs=16k count=16384
+	$ time dd if=/dev/zero of=/mnt/xfr/testfile bs=16k count=16384
 ```	
 3.	Testing read speed when reading from the NFS server can be done with the following command:
 ```
 	$ time dd if=/mnt/xfr/testfile of=/dev/null bs=16k 
 ```
-# 3.	Using SPILT
-## 3.1.	Instructions for Instructors
+## 3.	Using SPILT
+### 3.1.	Instructions for Instructors
 1.	For each class or batch of students, it is advisable to create a specific subdirectory to receive their answer files. Do not use previously used subdirectory for this purpose. The subdirectory should be created in the home directory on the SPILT server. For example if the class is for December 2025, you may want to use ‘dec2025’ as the name of the new “class subdirectory”, like so:
 ```
-$ mkdir ~/dec2025
+	$ mkdir ~/dec2025
 ```
 2.	Next, make six subdirectories inside the newly created “class subdirectory”, like so:
 ```
@@ -263,15 +265,15 @@ $ mkdir ~/dec2025
 ```
 3.	Then, copy the file receiver script into the “class subdirectory” so that you can easily start the socket service from within it. The command is (don’t miss the last dot):
 ```
-$ sudo cp /srv/pub/spilt/tools/socksrv.recvfile.005.py ~/dec2025/.
+	$ sudo cp /srv/pub/spilt/tools/socksrv.recvfile.005.py ~/dec2025/.
 ```
- 	The above steps (1 to 3) need to be done only once per each class or batch of students.
+* The above steps (1 to 3) need to be done only once per each class or batch of students.
 
 4.	Before each assessment session, please ensure that the content of the file /srv/pub/spilt/runspilt.sh is changed appropriately. The following command should open the file for editing:
 ```
 	$ sudo nano /srv/pub/spilt/runspilt.sh 
 ```
- 	The content of the file should be similar to this:
+* The content of the file should be similar to this:
 ```
 #!/bin/bash
 ###############################################################################
@@ -327,13 +329,13 @@ done
 
 5. The part of the script that needs to be changed is marked as bold red in the above figure, specifically: ‘spilt.09400.py --t2’. Most of the time the Python filename (‘spilt.09400.py’) need not be changed, unless some kind of upgrade or major correction has been done. The argument part (e.g. ‘-- t2’) however, need to indicate the correct assessment type/session. They are:
 ```
-spilt.09400.py --a1	- Assignment 1
-spilt.09400.py --a2	- Assignment 2
-spilt.09400.py --a3	- Assignment 3
-spilt.09400.py --t1	- Test 1
-spilt.09400.py --t2	- Test 2
+	spilt.09400.py --a1	- Assignment 1
+	spilt.09400.py --a2	- Assignment 2
+	spilt.09400.py --a3	- Assignment 3
+	spilt.09400.py --t1	- Test 1
+	spilt.09400.py --t2	- Test 2
 ```
- 	Make the appropriate changes and save the file.
+* Make the appropriate changes and save the file.
 
 6.	Then, run the “file receiver script”, like so:
 ```
@@ -345,12 +347,12 @@ spilt.09400.py --t2	- Test 2
 #### 3.1.1.	Question Banks
 1.	The question banks for SPILT are spread into several files, so that they are easier to manage. There are three main types of questions i.e. assignments, tests and samples. These are indicated by their filenames i.e. Qasgn*.txt (for assignments), Qtest*.txt (tests) and Qsamples*.txt (sample questions for practice). Further, they are spread into different files for different question numbers. The files as follows:  
 ```
-Qasgn11.txt	- Question bank for question 1 of assignment 1
-Qasgn12.txt	- Question bank for question 2 of assignment 1
-Qasgn21.txt	- Question bank for question 1 of assignment 2
-Qasgn22.txt	- Question bank for question 2 of assignment 2
+	Qasgn11.txt	- Question bank for question 1 of assignment 1
+	Qasgn12.txt	- Question bank for question 2 of assignment 1
+	Qasgn21.txt	- Question bank for question 1 of assignment 2
+	Qasgn22.txt	- Question bank for question 2 of assignment 2
 	Qasgn31.txt	- Question bank for question 1 of assignment 3
-Qasgn32.txt	- Question bank for question 2 of assignment 3
+	Qasgn32.txt	- Question bank for question 2 of assignment 3
 	Qtest11.txt	- Question bank for question 1 of test 1
 	Qtest12.txt	- Question bank for question 2 of test 1
 	Qtest13.txt	- Question bank for question 3 of test 1
@@ -381,11 +383,9 @@ _                                                         [x marks]
 </QUESTION>
 ```
 
+* The format makes use of tags similar to HTML but very very sparingly. The only important tags are <QUESTION> and </QUESTIONS> to separate one question from another. Formatting of paragraphs, line breaks, spacing etc are done manually, just like a plain text file.
 
-
- 	The format makes use of tags similar to HTML but very very sparingly. The only important tags are <QUESTION> and </QUESTIONS> to separate one question from another. Formatting of paragraphs, line breaks, spacing etc are done manually, just like a plain text file.
-
-3.	These files must reside in /srv/pub/spilt.
+* These files mentioned above, must reside in /srv/pub/spilt.
 
 ### 3.2.	Instructions for Students
 1.	Start Ubuntu Linux.
@@ -398,15 +398,22 @@ _                                                         [x marks]
 ```
 4.	There should be a prompt for you to enter your student ID. Enter your student ID. The program will look up for your ID and if found will display your name, the number of questions to be answered, and a list of commands that it understands.
 
-	The valid commands are:
-
-		v or view
-	e or edit
-		c or compile
-	r or run
-		s or submit
-
-	Note: You need to enter the command by typing its assigned letter followed by the ‘Enter’; or a full command word followed by the ‘Enter’ key.
+* The valid commands are:
+```
+	v or view      - Display current question
+	e or edit      - Start writing a C program to answer the question or to continue editing
+                     the current C program. gedit editor will be opened in a new window
+                     (if it is not already opened) containing the C program you are writing
+                     for the current question. The program file is automatically named
+                     according the the question number, i.e. program1.c for question 1,
+                     program2.c for question 2 and so forth.
+	c or compile   - Compile the C program (created above) using gcc
+	r or run       - Run the program (when compilation is successful)
+	s or submit    - Submit the answer/program to server. If there are more questions to answer
+                     it will increment to the next question number.
+	h or help		- Display the help screen which briefly describes 
+```
+* Note: You need to enter the command by typing its assigned letter followed by the ‘Enter’; or a full command word followed by the ‘Enter’ key.
 
 5.	Press the ‘Enter’ key in order to view the first question. Read the question and start to prepare your answer.
 
@@ -427,7 +434,7 @@ _                                                         [x marks]
 13.	After successful submission, you will automatically advance to the next question. Thus you can repeat the above steps again until all the questions in the assessment are answered.
 
 
-4.	Limitations, restrictions, quirks…
+## 4.	Limitations, restrictions, quirks…
 1.	Everything is text-based. User interface, question file etc are in plain text. So, cannot include graphics in questions ☹
 
 2.	No checking whether a student has actually answered the first question before he moves on to question number 2. When he submits a file, he is automatically advanced to the next question. Maybe we should put a password that a GA/instructor can key in?
@@ -443,33 +450,6 @@ _                                                         [x marks]
 7.	The working directory is left as is after the test. Instructors may want to manually remove the working directory before the next student use the PC.
 
 
-
-
-
-## Summary of commands
-
-<pre>	Step			Command		Remarks
-	Start test		labtest		Enter this at the terminal command prompt
-	Display help		help		Display the help screen which briefly describes 
-								the commands available to the user
-	View question		view		Display current question
-	Edit program		edit		Start writing a C program to answer the question
-						or to continue editing the current C program.
-						gedit editor will be opened in a new window
-						(if it is not already opened) containing the C
-						program you are writing for the current
-						question. The program file is automatically
-						named according the the question number, i.e.
-						program1.c for question 1, program2.c for
-						question 2 etc.
-	Compile			compile		Compile the C program (created above) using gcc
-	Verify			run		Run the program (when compilation is successful)
-						Repeat any of the steps above until satisfied 
-						with the answer.
-	Submit program		submit		Submit the answer/program to server. If there 
-						are more questions to answer it will increment 
-						to the next question number.
-</pre>
 
 
 
